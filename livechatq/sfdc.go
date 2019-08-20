@@ -94,7 +94,7 @@ func StartSession(config SfdcConfig, username string, sessID string,
 // SendMsg : send message to live chat agent
 func SendMsg(config SfdcConfig, sessID string, sessKey string,
 	affinityToken string, msg string) *http.Response {
-	URL := config.liveChatURL + "/rest/Chasitor/ChatMessage"
+	URL := config.liveChatURL + "/chat/rest/Chasitor/ChatMessage"
 	headers := map[string]string{
 		"X-LIVEAGENT-AFFINITY":    affinityToken,
 		"X-LIVEAGENT-API-VERSION": "41",
@@ -104,5 +104,18 @@ func SendMsg(config SfdcConfig, sessID string, sessKey string,
 		"text": msg,
 	}
 	resp := util.HTTPPost(URL, payload, headers)
+	return resp
+}
+
+// Listen : listen to livechat messages updates
+func Listen(config SfdcConfig, sessID string, sessKey string,
+	affinityToken string) *http.Response {
+	URL := config.liveChatURL + "/chat/rest/System/Messages"
+	headers := map[string]string{
+		"X-LIVEAGENT-AFFINITY":    affinityToken,
+		"X-LIVEAGENT-API-VERSION": "41",
+		"X-LIVEAGENT-SESSION-KEY": sessKey,
+	}
+	resp := util.HTTPGet(URL, nil, headers)
 	return resp
 }
