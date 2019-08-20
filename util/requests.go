@@ -27,8 +27,8 @@ func ExtractRespBody(resp http.Response) string {
 	return bodyString
 }
 
-// Get : HTTP Get request
-func Get(URL string, queryString map[string]string,
+// HTTPGet : HTTP Get request
+func HTTPGet(URL string, queryString map[string]string,
 	headers map[string]string) *http.Response {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", URL, nil)
@@ -52,8 +52,8 @@ func Get(URL string, queryString map[string]string,
 	return resp
 }
 
-// Post : HTTP Post request
-func Post(URL string, payload map[string]string,
+// HTTPPost : HTTP Post request
+func HTTPPost(URL string, payload map[string]string,
 	headers map[string]string) *http.Response {
 	client := &http.Client{}
 

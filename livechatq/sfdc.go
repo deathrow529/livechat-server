@@ -6,17 +6,6 @@ import (
 	"github.com/agila/livechat-server-go/util"
 )
 
-/*
-payload := map[string]string{
-	"grant_type":    "password",
-	"client_id":     config.clientID,
-	"client_secret": config.clientSecret,
-	"username":      config.basicAuthEmail,
-	"password":      config.basicAuthPassword,
-}
-jsonValue, _ := json.Marshal(payload)
-*/
-
 // SfdcConfig : SFDC App Configuration
 type SfdcConfig struct {
 	authorizerURL     string
@@ -25,12 +14,16 @@ type SfdcConfig struct {
 	basicAuthPassword string
 	clientID          string
 	clientSecret      string
+	organizationID    string
+	deploymentID      string
+	buttonID          string
 }
 
 // NewSfdcConfig : Create SFDC Config Object
 func NewSfdcConfig(authorizerURL string, liveChatURL string,
 	basicAuthEmail string, basicAuthPassword, clientID string,
-	clientSecret string) SfdcConfig {
+	clientSecret string, organizationID string, deploymentID,
+	buttonID string) SfdcConfig {
 	return SfdcConfig{
 		authorizerURL,
 		liveChatURL,
@@ -38,6 +31,9 @@ func NewSfdcConfig(authorizerURL string, liveChatURL string,
 		basicAuthPassword,
 		clientID,
 		clientSecret,
+		organizationID,
+		deploymentID,
+		buttonID,
 	}
 }
 
@@ -51,11 +47,46 @@ func authorize(config SfdcConfig) *http.Response {
 		"username":      config.basicAuthEmail,
 		"password":      config.basicAuthPassword,
 	}
-	resp := util.Get(URL, qmap, nil)
+	resp := util.HTTPGet(URL, qmap, nil)
 	return resp
 }
 
 // CreateSession : create livechat session
 func CreateSession(config SfdcConfig) *http.Response {
 	URL := config.liveChatURL + "/chat/rest/System/SessionId"
+	headers := map[string]string{
+		"X-LIVEAGENT-AFFINITY":    "null",
+		"X-LIVEAGENT-API-VERSION": "46",
+	}
+
+	resp := util.HTTPGet(URL, nil, headers)
+	return resp
+}
+
+// StartSession : start sfdc session
+func StartSession(config SfdcConfig, username string, sessID string,
+	sessKey string, affinityToken string) *http.Response {
+	URL := config.liveChatURL + "/chat/rest/Chasitor/ChasitorInit"
+	headers := map[string]string{
+		"X-LIVEAGENT-AFFINITY":    affinityToken,
+		"X-LIVEAGENT-API-VERSION": "46",
+		"X-LIVEAGENT-SESSION-KEY": sessKey,
+		"X-LIVEAGENT-SEQUENCE":    "1",
+	}
+
+	payload := map[string]string{
+		"sessionId":           sessID,
+		"organizationId":      config.organizationID,
+		"deploymentId":        config.deploymentID,
+		"buttonId":            config.buttonID,
+		"userAgent":           "",
+		"language":            "en-US",
+		"screenResolution":    "1900x1080",
+		"visitorName":         username,
+		"receiveQueueUpdates": "true",
+		"isPost":              "true",
+	}
+
+	resp := util.HTTPPost(URL, payload, headers)
+	return resp
 }
