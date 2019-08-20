@@ -1,4 +1,4 @@
-package redisqgo
+package livechatq
 
 // Redigo
 import (
