@@ -3,7 +3,7 @@ package livechatq
 import (
 	"net/http"
 
-	"github.com/agila/livechat-server-go/util"
+	"github.com/agila/livechat-server-go/util/requests"
 )
 
 // SfdcConfig : SFDC App Configuration
@@ -47,7 +47,7 @@ func authorize(config SfdcConfig) *http.Response {
 		"username":      config.basicAuthEmail,
 		"password":      config.basicAuthPassword,
 	}
-	resp := util.HTTPGet(URL, qmap, nil)
+	resp := requests.HTTPGet(URL, qmap, nil)
 	return resp
 }
 
@@ -59,7 +59,7 @@ func CreateSession(config SfdcConfig) *http.Response {
 		"X-LIVEAGENT-API-VERSION": "46",
 	}
 
-	resp := util.HTTPGet(URL, nil, headers)
+	resp := requests.HTTPGet(URL, nil, headers)
 	return resp
 }
 
@@ -87,7 +87,7 @@ func StartSession(config SfdcConfig, username string, sessID string,
 		"isPost":              "true",
 	}
 
-	resp := util.HTTPPost(URL, payload, headers)
+	resp := requests.HTTPPost(URL, payload, headers)
 	return resp
 }
 
@@ -103,7 +103,7 @@ func SendMsg(config SfdcConfig, sessID string, sessKey string,
 	payload := map[string]string{
 		"text": msg,
 	}
-	resp := util.HTTPPost(URL, payload, headers)
+	resp := requests.HTTPPost(URL, payload, headers)
 	return resp
 }
 
@@ -116,6 +116,6 @@ func Listen(config SfdcConfig, sessID string, sessKey string,
 		"X-LIVEAGENT-API-VERSION": "41",
 		"X-LIVEAGENT-SESSION-KEY": sessKey,
 	}
-	resp := util.HTTPGet(URL, nil, headers)
+	resp := requests.HTTPGet(URL, nil, headers)
 	return resp
 }

@@ -8,7 +8,8 @@ import (
 )
 
 // NewPool : Creates New Redis Connectio Pool
-func NewPool(maxIdle int, maxActive int, hostname string, passw string) *redis.Pool {
+func NewPool(maxIdle int, maxActive int, hostname string,
+	passw string) *redis.Pool {
 	return &redis.Pool{
 		MaxIdle:   maxIdle,
 		MaxActive: maxActive,
