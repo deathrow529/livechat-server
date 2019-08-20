@@ -3,7 +3,7 @@ package livechatq
 import (
 	"fmt"
 	"net/http"
-	"reflect"
+	"net/url"
 )
 
 // SfdcConfig : SFDC App Configuration
@@ -16,21 +16,12 @@ type SfdcConfig struct {
 	clientSecret      string
 }
 
-// Hello : prints hello
-func Hello() {
-	fmt.Println("hello")
-}
-
-/*
-	Query String builder:
-	qs: queryString
-	qm: queryMap
-*/
-func queryStringBuilder(qs *interface{}, qm map[string]string) {
+// QueryStringBuilder : Build query string in url values
+func queryStringBuilder(qs *url.Values, qm map[string]string) {
 	// Iterate query map
-	// for key, value := range qm {
-
-	// }
+	for key, value := range qm {
+		(*qs).Add(key, value)
+	}
 }
 
 // Authorize SFDC Requests
@@ -38,15 +29,16 @@ func authorize(config SfdcConfig) *http.Response {
 	URL := config.authorizerURL + "/services/oauth2/token"
 	req, _ := http.NewRequest("GET", URL, nil)
 
-	fmt.Println(reflect.TypeOf(req))
-
 	queryString := req.URL.Query()
-	queryString.Add("grant_type", "password")
-	queryString.Add("client_id", config.clientID)
-	queryString.Add("client_secret", config.clientSecret)
-	queryString.Add("username", config.basicAuthEmail)
-	queryString.Add("password", config.basicAuthPassword)
+	qmap := map[string]string{
+		"grant_type":    "password",
+		"client_id":     config.clientID,
+		"client_secret": config.clientSecret,
+		"username":      config.basicAuthEmail,
+		"password":      config.basicAuthPassword,
+	}
 
+	queryStringBuilder(&queryString, qmap)
 	req.URL.RawQuery = queryString.Encode()
 	resp, err := http.Get(req.URL.String())
 	if err != nil {
