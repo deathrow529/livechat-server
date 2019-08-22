@@ -35,7 +35,7 @@ func ExtractRespBody(resp *http.Response) string {
 }
 
 // HTTPGet : HTTP Get request
-func HTTPGet(URL string, queryString map[string]string,
+func HTTPGet(URL string, queryString map[string]interface{},
 	headers map[string]string) *http.Response {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", URL, nil)
@@ -47,7 +47,8 @@ func HTTPGet(URL string, queryString map[string]string,
 
 	if queryString != nil {
 		for key, value := range queryString {
-			req.URL.Query().Add(key, value)
+			strValue, _ := value.(string)
+			req.URL.Query().Add(key, strValue)
 		}
 	}
 
@@ -60,11 +61,15 @@ func HTTPGet(URL string, queryString map[string]string,
 }
 
 // HTTPPost : HTTP Post request
-func HTTPPost(URL string, payload map[string]string,
+func HTTPPost(URL string, payload map[string]interface{},
 	headers map[string]string) *http.Response {
 	client := &http.Client{}
 
 	jsonPayload, _ := json.Marshal(payload)
+	jsonString := string(jsonPayload)
+
+	fmt.Println(jsonString)
+
 	req, _ := http.NewRequest("POST", URL, bytes.NewBuffer(jsonPayload))
 	if headers != nil {
 		for key, value := range headers {

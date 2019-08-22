@@ -40,7 +40,7 @@ func NewSfdcConfig(authorizerURL string, liveChatURL string,
 // Authorize SFDC Requests
 func authorize(config SfdcConfig) *http.Response {
 	URL := config.authorizerURL + "/services/oauth2/token"
-	qmap := map[string]string{
+	qmap := map[string]interface{}{
 		"grant_type":    "password",
 		"client_id":     config.clientID,
 		"client_secret": config.clientSecret,
@@ -74,7 +74,9 @@ func StartSession(config SfdcConfig, username string, sessID string,
 		"X-LIVEAGENT-SEQUENCE":    "1",
 	}
 
-	payload := map[string]string{
+	emptyList := []map[string]interface{}{}
+
+	payload := map[string]interface{}{
 		"sessionId":           sessID,
 		"organizationId":      config.organizationID,
 		"deploymentId":        config.deploymentID,
@@ -82,9 +84,11 @@ func StartSession(config SfdcConfig, username string, sessID string,
 		"userAgent":           "",
 		"language":            "en-US",
 		"screenResolution":    "1900x1080",
+		"prechatDetails":      emptyList,
+		"prechatEntities":     emptyList,
 		"visitorName":         username,
-		"receiveQueueUpdates": "true",
-		"isPost":              "true",
+		"receiveQueueUpdates": true,
+		"isPost":              true,
 	}
 
 	resp := requests.HTTPPost(URL, payload, headers)
@@ -100,7 +104,7 @@ func SendMsg(config SfdcConfig, sessID string, sessKey string,
 		"X-LIVEAGENT-API-VERSION": "41",
 		"X-LIVEAGENT-SESSION-KEY": sessKey,
 	}
-	payload := map[string]string{
+	payload := map[string]interface{}{
 		"text": msg,
 	}
 	resp := requests.HTTPPost(URL, payload, headers)
