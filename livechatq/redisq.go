@@ -19,12 +19,13 @@ func NewPool(maxIdle int, maxActive int, hostname string,
 				panic(err.Error())
 			}
 
-			response, err := c.Do("AUTH", passw)
-			if err != nil {
-				panic(err.Error())
+			if passw != "" {
+				_, err := c.Do("AUTH", passw)
+				if err != nil {
+					panic(err.Error())
+				}
 			}
 
-			fmt.Println(response)
 			return c, err
 		},
 	}
