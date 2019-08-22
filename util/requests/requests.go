@@ -46,10 +46,12 @@ func HTTPGet(URL string, queryString map[string]interface{},
 	}
 
 	if queryString != nil {
+		q := req.URL.Query()
 		for key, value := range queryString {
 			strValue, _ := value.(string)
-			req.URL.Query().Add(key, strValue)
+			q.Add(key, strValue)
 		}
+		req.URL.RawQuery = q.Encode()
 	}
 
 	resp, err := client.Do(req)
