@@ -16,8 +16,15 @@ func _queryStringBuilder(qs *url.Values, qm map[string]string) {
 	}
 }
 
+// TransformStrToMap : Convert Str Json to Map
+func TransformStrToMap(jsonstr string) map[string]interface{} {
+	var jsonMap map[string]interface{}
+	json.Unmarshal([]byte(jsonstr), &jsonMap)
+	return jsonMap
+}
+
 // ExtractRespBody : extract response body and transform to map
-func ExtractRespBody(resp http.Response) string {
+func ExtractRespBody(resp *http.Response) string {
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("Payload Transform Fail")
