@@ -3,7 +3,7 @@ package livechatq
 import (
 	"net/http"
 
-	"github.com/agila/livechat-server-go/util/requests"
+	"github.com/agilasolutions/livechat-server-go/util/requests"
 )
 
 // SfdcConfig : SFDC App Configuration

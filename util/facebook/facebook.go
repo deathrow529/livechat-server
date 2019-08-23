@@ -3,7 +3,7 @@ package facebook
 import (
 	"net/http"
 
-	"github.com/agila/livechat-server-go/util/requests"
+	"github.com/agilasolutions/livechat-server-go/util/requests"
 )
 
 var hostURL = "https://graph.facebook.com/v2.9"
