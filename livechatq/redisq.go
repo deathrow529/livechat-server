@@ -10,6 +10,7 @@ import (
 // NewPool : Creates New Redis Connectio Pool
 func NewPool(maxIdle int, maxActive int, hostname string,
 	passw string) *redis.Pool {
+	fmt.Println("[Redisq]: Creating connection pool")
 	return &redis.Pool{
 		MaxIdle:   maxIdle,
 		MaxActive: maxActive,
