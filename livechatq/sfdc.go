@@ -1,6 +1,7 @@
 package livechatq
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/agilasolutions/livechat-server-go/util/requests"
@@ -42,14 +43,19 @@ func NewSfdcConfig(instanceURL, authorizerURL string, liveChatURL string,
 // Authorize SFDC Requests
 func authorize(config SfdcConfig) *http.Response {
 	URL := config.authorizerURL + "/services/oauth2/token"
-	qmap := map[string]interface{}{
-		"grant_type":    "password",
-		"client_id":     config.clientID,
-		"client_secret": config.clientSecret,
-		"username":      config.basicAuthEmail,
-		"password":      config.basicAuthPassword,
+	URL += "?grant_type=password"
+	URL += "&client_id=" + config.clientID
+	URL += "&client_secret=" + config.clientSecret
+	URL += "&username=" + config.basicAuthEmail
+	URL += "&password=" + config.basicAuthPassword
+
+	fmt.Println(URL)
+	headers := map[string]string{
+		"Content-Type": "application/json; charset=UTF-8",
+		"Accept":       "application/json",
 	}
-	resp := requests.HTTPGet(URL, qmap, nil)
+	payload := map[string]interface{}{}
+	resp := requests.HTTPPost(URL, payload, headers)
 	return resp
 }
 
@@ -71,6 +77,7 @@ func CreateCase(config SfdcConfig, status string, origin string, subject string,
 	URL := config.instanceURL + "/services/data/v39.0/sObjects/Case"
 	sessBytes := authorize(config)
 	sessInfoStr := requests.ExtractRespBody(sessBytes)
+	fmt.Println(sessInfoStr)
 	sessInfomap := requests.TransformStrToMap(sessInfoStr)
 
 	accessToken, _ := sessInfomap["access_token"].(string)
@@ -79,6 +86,8 @@ func CreateCase(config SfdcConfig, status string, origin string, subject string,
 		"Accept":        "application/json",
 		"Authorization": "Bearer " + accessToken,
 	}
+
+	fmt.Println(headers)
 
 	payload := map[string]interface{}{
 		"status":      status,
