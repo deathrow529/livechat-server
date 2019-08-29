@@ -93,7 +93,8 @@ func CreateCase(config SfdcConfig, status string, origin string, subject string,
 
 // StartSession : start sfdc session
 func StartSession(config SfdcConfig, username string, sessID string,
-	sessKey string, affinityToken string) *http.Response {
+	sessKey string, affinityToken string, prechatDetails []map[string]interface{},
+	prechatEntities []map[string]interface{}) *http.Response {
 	URL := config.liveChatURL + "/chat/rest/Chasitor/ChasitorInit"
 	headers := map[string]string{
 		"X-LIVEAGENT-AFFINITY":    affinityToken,
@@ -101,8 +102,6 @@ func StartSession(config SfdcConfig, username string, sessID string,
 		"X-LIVEAGENT-SESSION-KEY": sessKey,
 		"X-LIVEAGENT-SEQUENCE":    "1",
 	}
-
-	emptyList := []map[string]interface{}{}
 
 	payload := map[string]interface{}{
 		"sessionId":           sessID,
@@ -112,8 +111,8 @@ func StartSession(config SfdcConfig, username string, sessID string,
 		"userAgent":           "",
 		"language":            "en-US",
 		"screenResolution":    "1900x1080",
-		"prechatDetails":      emptyList,
-		"prechatEntities":     emptyList,
+		"prechatDetails":      prechatDetails,
+		"prechatEntities":     prechatEntities,
 		"visitorName":         username,
 		"receiveQueueUpdates": true,
 		"isPost":              true,
