@@ -8,6 +8,7 @@ import (
 
 // SfdcConfig : SFDC App Configuration
 type SfdcConfig struct {
+	instanceURL       string
 	authorizerURL     string
 	liveChatURL       string
 	basicAuthEmail    string
@@ -20,11 +21,12 @@ type SfdcConfig struct {
 }
 
 // NewSfdcConfig : Create SFDC Config Object
-func NewSfdcConfig(authorizerURL string, liveChatURL string,
+func NewSfdcConfig(instanceURL, authorizerURL string, liveChatURL string,
 	basicAuthEmail string, basicAuthPassword, clientID string,
 	clientSecret string, organizationID string, deploymentID,
 	buttonID string) SfdcConfig {
 	return SfdcConfig{
+		instanceURL,
 		authorizerURL,
 		liveChatURL,
 		basicAuthEmail,
@@ -60,6 +62,32 @@ func CreateSession(config SfdcConfig) *http.Response {
 	}
 
 	resp := requests.HTTPGet(URL, nil, headers)
+	return resp
+}
+
+// CreateCase : Creates New Salesforce Case
+func CreateCase(config SfdcConfig, status string, origin string, subject string,
+	description string) *http.Response {
+	URL := config.instanceURL + "/services/data/v39.0/sObjects/Case"
+	sessBytes := authorize(config)
+	sessInfoStr := requests.ExtractRespBody(sessBytes)
+	sessInfomap := requests.TransformStrToMap(sessInfoStr)
+
+	accessToken, _ := sessInfomap["access_token"].(string)
+	headers := map[string]string{
+		"Content-Type":  "application/json",
+		"Accept":        "application/json",
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	payload := map[string]interface{}{
+		"status":      status,
+		"origin":      origin,
+		"subject":     subject,
+		"description": description,
+	}
+
+	resp := requests.HTTPPost(URL, payload, headers)
 	return resp
 }
 
